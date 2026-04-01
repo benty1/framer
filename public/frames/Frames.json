@@ -185,6 +185,258 @@
           "screenshotHeight": 1179
         }
       }
+    },
+    "17": {
+      "Pro Max": {
+        "Cosmic Orange": {
+          "Portrait": {
+            "x": "75",
+            "y": "66",
+            "name": "iPhone 17 Pro Max - Cosmic Orange - Portrait",
+            "screenshotWidth": 1320,
+            "screenshotHeight": 2868
+          },
+          "Landscape": {
+            "x": "66",
+            "y": "75",
+            "name": "iPhone 17 Pro Max - Cosmic Orange - Landscape",
+            "screenshotWidth": 2868,
+            "screenshotHeight": 1320
+          }
+        },
+        "Deep Blue": {
+          "Portrait": {
+            "x": "75",
+            "y": "66",
+            "name": "iPhone 17 Pro Max - Deep Blue - Portrait",
+            "screenshotWidth": 1320,
+            "screenshotHeight": 2868
+          },
+          "Landscape": {
+            "x": "66",
+            "y": "75",
+            "name": "iPhone 17 Pro Max - Deep Blue - Landscape",
+            "screenshotWidth": 2868,
+            "screenshotHeight": 1320
+          }
+        },
+        "Silver": {
+          "Portrait": {
+            "x": "75",
+            "y": "66",
+            "name": "iPhone 17 Pro Max - Silver - Portrait",
+            "screenshotWidth": 1320,
+            "screenshotHeight": 2868
+          },
+          "Landscape": {
+            "x": "66",
+            "y": "75",
+            "name": "iPhone 17 Pro Max - Silver - Landscape",
+            "screenshotWidth": 2868,
+            "screenshotHeight": 1320
+          }
+        }
+      },
+      "Pro": {
+        "Cosmic Orange": {
+          "Portrait": {
+            "x": "72",
+            "y": "69",
+            "name": "iPhone 17 Pro - Cosmic Orange - Portrait",
+            "screenshotWidth": 1206,
+            "screenshotHeight": 2622
+          },
+          "Landscape": {
+            "x": "69",
+            "y": "72",
+            "name": "iPhone 17 Pro - Cosmic Orange - Landscape",
+            "screenshotWidth": 2622,
+            "screenshotHeight": 1206
+          }
+        },
+        "Deep Blue": {
+          "Portrait": {
+            "x": "72",
+            "y": "69",
+            "name": "iPhone 17 Pro - Deep Blue - Portrait",
+            "screenshotWidth": 1206,
+            "screenshotHeight": 2622
+          },
+          "Landscape": {
+            "x": "69",
+            "y": "72",
+            "name": "iPhone 17 Pro - Deep Blue - Landscape",
+            "screenshotWidth": 2622,
+            "screenshotHeight": 1206
+          }
+        },
+        "Silver": {
+          "Portrait": {
+            "x": "72",
+            "y": "69",
+            "name": "iPhone 17 Pro - Silver - Portrait",
+            "screenshotWidth": 1206,
+            "screenshotHeight": 2622
+          },
+          "Landscape": {
+            "x": "69",
+            "y": "72",
+            "name": "iPhone 17 Pro - Silver - Landscape",
+            "screenshotWidth": 2622,
+            "screenshotHeight": 1206
+          }
+        }
+      },
+      "Standard": {
+        "Black": {
+          "Portrait": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - Black - Portrait",
+            "screenshotWidth": 1179,
+            "screenshotHeight": 2556
+          },
+          "Landscape": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - Black - Landscape",
+            "screenshotWidth": 2556,
+            "screenshotHeight": 1179
+          }
+        },
+        "Lavender": {
+          "Portrait": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - Lavender - Portrait",
+            "screenshotWidth": 1179,
+            "screenshotHeight": 2556
+          },
+          "Landscape": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - Lavender - Landscape",
+            "screenshotWidth": 2556,
+            "screenshotHeight": 1179
+          }
+        },
+        "Mist Blue": {
+          "Portrait": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - Mist Blue - Portrait",
+            "screenshotWidth": 1179,
+            "screenshotHeight": 2556
+          },
+          "Landscape": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - Mist Blue - Landscape",
+            "screenshotWidth": 2556,
+            "screenshotHeight": 1179
+          }
+        },
+        "Sage": {
+          "Portrait": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - Sage - Portrait",
+            "screenshotWidth": 1179,
+            "screenshotHeight": 2556
+          },
+          "Landscape": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - Sage - Landscape",
+            "screenshotWidth": 2556,
+            "screenshotHeight": 1179
+          }
+        },
+        "White": {
+          "Portrait": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - White - Portrait",
+            "screenshotWidth": 1179,
+            "screenshotHeight": 2556
+          },
+          "Landscape": {
+            "x": "90",
+            "y": "90",
+            "name": "iPhone 17 - White - Landscape",
+            "screenshotWidth": 2556,
+            "screenshotHeight": 1179
+          }
+        }
+      }
+    },
+    "Air": {
+      "Standard": {
+        "Cloud White": {
+          "Portrait": {
+            "x": "60",
+            "y": "72",
+            "name": "iPhone Air - Cloud White - Portrait",
+            "screenshotWidth": 1260,
+            "screenshotHeight": 2736
+          },
+          "Landscape": {
+            "x": "72",
+            "y": "60",
+            "name": "iPhone Air - Cloud White - Landscape",
+            "screenshotWidth": 2736,
+            "screenshotHeight": 1260
+          }
+        },
+        "Light Gold": {
+          "Portrait": {
+            "x": "60",
+            "y": "72",
+            "name": "iPhone Air - Light Gold - Portrait",
+            "screenshotWidth": 1260,
+            "screenshotHeight": 2736
+          },
+          "Landscape": {
+            "x": "72",
+            "y": "60",
+            "name": "iPhone Air - Light Gold - Landscape",
+            "screenshotWidth": 2736,
+            "screenshotHeight": 1260
+          }
+        },
+        "Sky Blue": {
+          "Portrait": {
+            "x": "60",
+            "y": "72",
+            "name": "iPhone Air - Sky Blue - Portrait",
+            "screenshotWidth": 1260,
+            "screenshotHeight": 2736
+          },
+          "Landscape": {
+            "x": "72",
+            "y": "60",
+            "name": "iPhone Air - Sky Blue - Landscape",
+            "screenshotWidth": 2736,
+            "screenshotHeight": 1260
+          }
+        },
+        "Space Black": {
+          "Portrait": {
+            "x": "60",
+            "y": "72",
+            "name": "iPhone Air - Space Black - Portrait",
+            "screenshotWidth": 1260,
+            "screenshotHeight": 2736
+          },
+          "Landscape": {
+            "x": "72",
+            "y": "60",
+            "name": "iPhone Air - Space Black - Landscape",
+            "screenshotWidth": 2736,
+            "screenshotHeight": 1260
+          }
+        }
+      }
     }
   },
   "iPad": {

@@ -3,7 +3,7 @@ import { ImagePlus, Download, Trash2, Settings } from "lucide-react";
 import UploadZone from "./UploadZone";
 import FramePreview from "./FramePreview";
 import FrameSettings from "./FrameSettings";
-import { DeviceFrame } from "../hooks/useFrames";
+import { DeviceFrame, getFramePath } from "../hooks/useFrames";
 import { toast } from "sonner";
 import JSZip from "jszip";
 
@@ -132,8 +132,9 @@ const ScreenshotFramer = ({
     const imageUrl = URL.createObjectURL(image);
     try {
       const frameName = frame.coordinates.name;
-      const framePath = `/frames/${frameName}.png`;
-      const maskPath = `/frames/${frameName}_mask.png`;
+      const frameDir = getFramePath(frame);
+      const framePath = `/frames/${frameDir}/${frameName}.png`;
+      const maskPath = `/frames/${frameDir}/${frameName}_mask.png`;
       const [screenImg, frameImg] = await Promise.all([
         loadImage(imageUrl),
         loadImage(framePath),
@@ -151,22 +152,38 @@ const ScreenshotFramer = ({
       canvas.height = frameImg.height * scale;
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("No canvas context");
+      // Disable image smoothing to prevent bleeding in Safari
+      ctx.imageSmoothingEnabled = false;
       // Create a temporary canvas for the masked screenshot
       const tempCanvas = document.createElement("canvas");
       const tempCtx = tempCanvas.getContext("2d");
       if (!tempCtx) throw new Error("No temp canvas context");
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
-      const { x, y } = frame.coordinates;
+      // Disable image smoothing after resize (setting width/height resets context state)
+      tempCtx.imageSmoothingEnabled = false;
+      const { x, y, screenshotWidth, screenshotHeight } = frame.coordinates;
       const screenshotX = parseInt(x) * scale;
       const screenshotY = parseInt(y) * scale;
+      // Use frame's specified dimensions to ensure exact fit
+      const targetWidth = (screenshotWidth || screenImg.width) * scale;
+      const targetHeight = (screenshotHeight || screenImg.height) * scale;
+
+      // Only apply inset if there's NO mask (mask handles corner clipping)
+      const EDGE_INSET = maskImg ? 0 : 3 * scale;
+      const adjustedWidth = targetWidth - (EDGE_INSET * 2);
+      const adjustedHeight = targetHeight - (EDGE_INSET * 2);
+      const adjustedX = screenshotX + EDGE_INSET;
+      const adjustedY = screenshotY + EDGE_INSET;
       if (maskImg) {
         tempCtx.clearRect(0, 0, canvas.width, canvas.height);
         const maskCanvas = document.createElement("canvas");
         const maskCtx = maskCanvas.getContext("2d");
         if (!maskCtx) throw new Error("No mask canvas context");
-        maskCanvas.width = screenImg.width * scale;
-        maskCanvas.height = screenImg.height * scale;
+        maskCanvas.width = adjustedWidth;
+        maskCanvas.height = adjustedHeight;
+        // Disable image smoothing after resize (setting width/height resets context state)
+        maskCtx.imageSmoothingEnabled = false;
         maskCtx.drawImage(maskImg, 0, 0, maskCanvas.width, maskCanvas.height);
         const maskData = maskCtx.getImageData(
           0,
@@ -176,35 +193,36 @@ const ScreenshotFramer = ({
         );
         tempCtx.drawImage(
           screenImg,
-          screenshotX,
-          screenshotY,
-          screenImg.width * scale,
-          screenImg.height * scale
+          adjustedX,
+          adjustedY,
+          adjustedWidth,
+          adjustedHeight
         );
         const imageData = tempCtx.getImageData(
-          screenshotX,
-          screenshotY,
-          screenImg.width * scale,
-          screenImg.height * scale
+          adjustedX,
+          adjustedY,
+          adjustedWidth,
+          adjustedHeight
         );
         for (let i = 0; i < maskData.data.length; i += 4) {
-          if (
-            maskData.data[i] === 0 &&
-            maskData.data[i + 1] === 0 &&
-            maskData.data[i + 2] === 0
-          ) {
+          // If mask pixel is dark (below threshold) - handles (0,0,1) and similar near-black values
+          const r = maskData.data[i];
+          const g = maskData.data[i + 1];
+          const b = maskData.data[i + 2];
+          const threshold = 10; // Any pixel with all channels below 10 is considered "black"
+          if (r < threshold && g < threshold && b < threshold) {
             imageData.data[i + 3] = 0;
           }
         }
-        tempCtx.putImageData(imageData, screenshotX, screenshotY);
+        tempCtx.putImageData(imageData, adjustedX, adjustedY);
         ctx.drawImage(tempCanvas, 0, 0);
       } else {
         ctx.drawImage(
           screenImg,
-          screenshotX,
-          screenshotY,
-          screenImg.width * scale,
-          screenImg.height * scale
+          adjustedX,
+          adjustedY,
+          adjustedWidth,
+          adjustedHeight
         );
       }
       ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);

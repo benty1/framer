@@ -32,6 +32,7 @@ export interface DeviceFrame {
   model: string;
   variant?: string;
   version?: string;
+  color?: string;
   orientation?: 'Portrait' | 'Landscape';
   coordinates: FrameCoordinates;
 }
@@ -105,36 +106,89 @@ function flattenFramesData(data: FramesData): DeviceFrame[] {
               });
             } else {
               // Handle versions with variants or nested structures
-              Object.entries(variants).forEach(([variant, orientations]) => {
-                if (isFrameCoordinates(orientations)) {
-                  // Handle variant without orientation
-                  frames.push({
-                    id: `${category}-${deviceType}-${version}-${variant}`,
-                    category,
-                    deviceType,
-                    model: deviceType,
-                    version,
-                    variant,
-                    coordinates: orientations
-                  });
-                } else if (isRecord(orientations)) {
-                  // Handle variants with orientations
-                  Object.entries(orientations).forEach(([orientation, coords]) => {
+              // Check if variants level contains colors (check BEFORE iterating)
+              // Colors are only used for iPhone devices (e.g., iPhone 17 Pro Max)
+              // iPad and Watch use this level for variants/sizes (e.g., iPad Pro 13/11)
+              const hasColorLevel =
+                category === 'iPhone' &&
+                !('Portrait' in variants || 'Landscape' in variants) &&
+                Object.values(variants).every(val =>
+                  isRecord(val) && ('Portrait' in val || 'Landscape' in val)
+                );
+
+              if (hasColorLevel) {
+                // This level contains colors (e.g., iPhone 17 Pro Max)
+                Object.entries(variants).forEach(([color, colorOrientations]) => {
+                  if (isRecord(colorOrientations)) {
+                    Object.entries(colorOrientations).forEach(([orientation, coords]) => {
+                      if (isFrameCoordinates(coords)) {
+                        frames.push({
+                          id: `${category}-${deviceType}-${version}-${color}-${orientation}`,
+                          category,
+                          deviceType,
+                          model: deviceType,
+                          version,
+                          color,
+                          orientation: orientation as 'Portrait' | 'Landscape',
+                          coordinates: coords
+                        });
+                      }
+                    });
+                  }
+                });
+              } else {
+                // No color level - check if variants are actually orientations
+                const isOrientationLevel = 'Portrait' in variants || 'Landscape' in variants;
+
+                if (isOrientationLevel) {
+                  // Variants are actually orientations (e.g., iPhone 16 Pro Max)
+                  Object.entries(variants).forEach(([orientation, coords]) => {
                     if (isFrameCoordinates(coords)) {
                       frames.push({
-                        id: `${category}-${deviceType}-${version}-${variant}-${orientation}`,
+                        id: `${category}-${deviceType}-${version}-${orientation}`,
                         category,
                         deviceType,
                         model: deviceType,
                         version,
-                        variant,
                         orientation: orientation as 'Portrait' | 'Landscape',
                         coordinates: coords
                       });
                     }
                   });
+                } else {
+                  // Standard variant/orientation structure
+                  Object.entries(variants).forEach(([variant, orientations]) => {
+                    if (isFrameCoordinates(orientations)) {
+                      // Handle variant without orientation
+                      frames.push({
+                        id: `${category}-${deviceType}-${version}-${variant}`,
+                        category,
+                        deviceType,
+                        model: deviceType,
+                        version,
+                        variant,
+                        coordinates: orientations
+                      });
+                    } else if (isRecord(orientations)) {
+                      // Handle variants with orientations
+                      Object.entries(orientations).forEach(([orientation, coords]) => {
+                        if (isFrameCoordinates(coords)) {
+                          frames.push({
+                            id: `${category}-${deviceType}-${version}-${variant}-${orientation}`,
+                            category,
+                            deviceType,
+                            model: deviceType,
+                            version,
+                            variant,
+                            orientation: orientation as 'Portrait' | 'Landscape',
+                            coordinates: coords
+                          });
+                        }
+                      });
+                    }
+                  });
                 }
-              });
+              }
             }
           }
         });
@@ -143,6 +197,33 @@ function flattenFramesData(data: FramesData): DeviceFrame[] {
   });
 
   return frames;
+}
+
+export function getFramePath(frame: DeviceFrame): string {
+  const parts: string[] = [frame.category];
+
+  // Add device type (version for iPhone, model for others)
+  if (frame.category === 'iPhone') {
+    parts.push(frame.deviceType); // "8", "11", "12-13", "16", "17"
+    // For iPhone, version contains "Pro Max", "Pro", "Plus", "Standard"
+    if (frame.version) {
+      parts.push(frame.version.replace(/\s+/g, '-')); // "Pro-Max", "Pro", "Plus", "Standard"
+    }
+    // Add color if present (iPhone 17 Pro Max)
+    if (frame.color) {
+      parts.push(frame.color.replace(/\s+/g, '-')); // "Cosmic-Orange", "Deep-Blue", "Silver"
+    }
+  } else if (frame.category === 'iPad') {
+    parts.push(frame.model); // "Pro", "Air", "mini", "Standard"
+    if (frame.version) parts.push(frame.version); // "2024", "2018-2021", "2020", "2021"
+    if (frame.variant) parts.push(frame.variant); // "13", "11", "12.9"
+  } else if (frame.category === 'Watch') {
+    parts.push(frame.model); // "Ultra", "Series"
+    if (frame.version) parts.push(frame.version); // "2024", "4", "7", "10"
+    if (frame.variant) parts.push(frame.variant); // "44", "40", "45", "41", "46", "42"
+  }
+
+  return parts.join('/');
 }
 
 export function useFrames() {

@@ -8,16 +8,17 @@ interface FrameSettingsProps {
   onClose: () => void;
 }
 
-const FrameSettings = ({ 
+const FrameSettings = ({
   selectedFrame,
   setSelectedFrame,
-  onClose 
+  onClose
 }: FrameSettingsProps) => {
   const { frames, isLoading, error } = useFrames();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
   // Get unique categories
   const categories = Array.from(new Set(frames.map(frame => frame.category)));
@@ -35,8 +36,8 @@ const FrameSettings = ({
   const versionsByModel = React.useMemo(() => {
     return Array.from(new Set(
       frames
-        .filter(frame => 
-          frame.category === selectedCategory && 
+        .filter(frame =>
+          frame.category === selectedCategory &&
           frame.model === selectedModel
         )
         .map(frame => frame.version)
@@ -48,8 +49,8 @@ const FrameSettings = ({
   const variantsByVersion = React.useMemo(() => {
     return Array.from(new Set(
       frames
-        .filter(frame => 
-          frame.category === selectedCategory && 
+        .filter(frame =>
+          frame.category === selectedCategory &&
           frame.model === selectedModel &&
           (versionsByModel.length === 0 || frame.version === selectedVersion)
         )
@@ -58,29 +59,58 @@ const FrameSettings = ({
     ));
   }, [frames, selectedCategory, selectedModel, selectedVersion, versionsByModel]);
 
-  // Get orientations for selected variant
+  // Get colors for selected variant
+  const colorsByVariant = React.useMemo(() => {
+    return Array.from(new Set(
+      frames
+        .filter(frame =>
+          frame.category === selectedCategory &&
+          frame.model === selectedModel &&
+          (versionsByModel.length === 0 || frame.version === selectedVersion) &&
+          frame.color
+        )
+        .map(frame => frame.color)
+        .filter((color): color is string => color !== undefined)
+    ));
+  }, [frames, selectedCategory, selectedModel, selectedVersion, versionsByModel]);
+
+  // Get orientations for selected variant or color
   const orientationsByVariant = React.useMemo(() => {
-    return frames.filter(frame => 
-      frame.category === selectedCategory && 
-      frame.model === selectedModel &&
-      (versionsByModel.length === 0 || frame.version === selectedVersion) &&
-      frame.variant === selectedVariant &&
-      frame.orientation
-    );
-  }, [frames, selectedCategory, selectedModel, selectedVersion, selectedVariant, versionsByModel]);
+    return frames.filter(frame => {
+      const matchesBasic =
+        frame.category === selectedCategory &&
+        frame.model === selectedModel &&
+        (versionsByModel.length === 0 || frame.version === selectedVersion) &&
+        frame.orientation;
+
+      // If there are colors, filter by color
+      if (colorsByVariant.length > 0) {
+        return matchesBasic && frame.color === selectedColor;
+      }
+
+      // If there are variants, filter by variant
+      if (variantsByVersion.length > 0) {
+        return matchesBasic && frame.variant === selectedVariant;
+      }
+
+      // Otherwise, just return all matching orientations
+      return matchesBasic;
+    });
+  }, [frames, selectedCategory, selectedModel, selectedVersion, selectedVariant, selectedColor, colorsByVariant, variantsByVersion, versionsByModel]);
 
 
   const handleModelSelect = useCallback((model: string) => {
     setSelectedModel(model);
     setSelectedVersion(null);
     setSelectedVariant(null);
-    
+    setSelectedColor(null);
+
     // If there's only one version, select it automatically
     const versions = frames
       .filter(frame => frame.category === selectedCategory && frame.model === model)
       .map(frame => frame.version)
       .filter((version): version is string => version !== undefined);
-    
+
     if (versions.length === 1) {
       setSelectedVersion(versions[0]);
     }
@@ -89,10 +119,11 @@ const FrameSettings = ({
   const handleVersionSelect = useCallback((version: string) => {
     setSelectedVersion(version);
     setSelectedVariant(null);
-    
+    setSelectedColor(null);
+
     // Find matching frames for this version
-    const matchingFrames = frames.filter(frame => 
-      frame.category === selectedCategory && 
+    const matchingFrames = frames.filter(frame =>
+      frame.category === selectedCategory &&
       frame.model === selectedModel &&
       frame.version === version
     );
@@ -105,7 +136,7 @@ const FrameSettings = ({
       const variants = matchingFrames
         .map(frame => frame.variant)
         .filter((variant): variant is string => variant !== undefined);
-      
+
       if (variants.length === 1) {
         setSelectedVariant(variants[0]);
       }
@@ -114,15 +145,15 @@ const FrameSettings = ({
 
   const handleVariantSelect = useCallback((variant: string) => {
     setSelectedVariant(variant);
-    
+
     // If there's only one orientation or no orientation needed, select the frame
-    const matchingFrames = frames.filter(frame => 
-      frame.category === selectedCategory && 
+    const matchingFrames = frames.filter(frame =>
+      frame.category === selectedCategory &&
       frame.model === selectedModel &&
       (versionsByModel.length === 0 || frame.version === selectedVersion) &&
       frame.variant === variant
     );
-    
+
     if (matchingFrames.length === 1) {
       setSelectedFrame(matchingFrames[0]);
     } else if (matchingFrames.length > 1) {
@@ -135,6 +166,30 @@ const FrameSettings = ({
       }
     }
   }, [frames, selectedCategory, selectedModel, selectedVersion, versionsByModel, setSelectedFrame]);
+
+  const handleColorSelect = useCallback((color: string) => {
+    setSelectedColor(color);
+
+    // Find matching frames for this color
+    const matchingFrames = frames.filter(frame =>
+      frame.category === selectedCategory &&
+      frame.model === selectedModel &&
+      frame.version === selectedVersion &&
+      frame.color === color
+    );
+
+    if (matchingFrames.length === 1) {
+      setSelectedFrame(matchingFrames[0]);
+    } else if (matchingFrames.length > 1) {
+      // Prefer Portrait orientation if available
+      const portraitFrame = matchingFrames.find(frame => frame.orientation === 'Portrait');
+      if (portraitFrame) {
+        setSelectedFrame(portraitFrame);
+      } else {
+        setSelectedFrame(matchingFrames[0]);
+      }
+    }
+  }, [frames, selectedCategory, selectedModel, selectedVersion, setSelectedFrame]);
 
   // Auto-select first options
   useEffect(() => {
@@ -155,8 +210,8 @@ const FrameSettings = ({
       setSelectedVersion(version);
 
       // Find matching frames for this version
-      const matchingFrames = frames.filter(frame => 
-        frame.category === selectedCategory && 
+      const matchingFrames = frames.filter(frame =>
+        frame.category === selectedCategory &&
         frame.model === selectedModel &&
         frame.version === version
       );
@@ -169,7 +224,7 @@ const FrameSettings = ({
         const variants = matchingFrames
           .map(frame => frame.variant)
           .filter((variant): variant is string => variant !== undefined);
-        
+
         if (variants.length === 1) {
           setSelectedVariant(variants[0]);
         }
@@ -185,6 +240,15 @@ const FrameSettings = ({
       handleVariantSelect(variantsByVersion[0]);
     }
   }, [variantsByVersion, isLoading, error, selectedVariant, handleVariantSelect]);
+
+  useEffect(() => {
+    if (isLoading || error) return;
+
+    // Auto-select first color if available
+    if (colorsByVariant.length > 0 && !selectedColor) {
+      handleColorSelect(colorsByVariant[0]);
+    }
+  }, [colorsByVariant, isLoading, error, selectedColor, handleColorSelect]);
 
   useEffect(() => {
     if (isLoading || error) return;
@@ -209,6 +273,7 @@ const FrameSettings = ({
       setSelectedModel(selectedFrame.model || null);
       setSelectedVersion(selectedFrame.version || null);
       setSelectedVariant(selectedFrame.variant || null);
+      setSelectedColor(selectedFrame.color || null);
     }
   }, [selectedFrame]);
 
@@ -256,14 +321,14 @@ const FrameSettings = ({
         <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-8 animate-slideUp my-8">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xl font-medium">Frame Settings</h3>
-            <button 
+            <button
               onClick={onClose}
               className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
             >
               <X className="h-6 w-6 text-gray-500" />
             </button>
           </div>
-          
+
           <div className="space-y-8">
             {/* Device Category Selection */}
             <div>
@@ -272,16 +337,16 @@ const FrameSettings = ({
                 {categories.map((category) => (
                   <button
                     key={category}
-                    className={`p-4 rounded-lg border ${
-                      selectedCategory === category 
-                        ? 'border-blue-500 bg-blue-50' 
+                    className={`p-4 rounded-lg border ${selectedCategory === category
+                        ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:bg-gray-50'
-                    } transition-colors text-base`}
+                      } transition-colors text-base`}
                     onClick={() => {
                       setSelectedCategory(category);
                       setSelectedModel(null);
                       setSelectedVersion(null);
                       setSelectedVariant(null);
+                      setSelectedColor(null);
                     }}
                   >
                     {category}
@@ -298,11 +363,10 @@ const FrameSettings = ({
                   {modelsByCategory.map((model) => (
                     <button
                       key={model}
-                      className={`p-4 rounded-lg border text-left ${
-                        selectedModel === model
+                      className={`p-4 rounded-lg border text-left ${selectedModel === model
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:bg-gray-50'
-                      } transition-colors`}
+                        } transition-colors`}
                       onClick={() => handleModelSelect(model)}
                     >
                       {model}
@@ -320,11 +384,10 @@ const FrameSettings = ({
                   {versionsByModel.map((version) => (
                     <button
                       key={version}
-                      className={`p-4 rounded-lg border text-left ${
-                        selectedVersion === version
+                      className={`p-4 rounded-lg border text-left ${selectedVersion === version
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:bg-gray-50'
-                      } transition-colors`}
+                        } transition-colors`}
                       onClick={() => handleVersionSelect(version)}
                     >
                       {version}
@@ -337,16 +400,15 @@ const FrameSettings = ({
             {/* Variant Selection */}
             {variantsByVersion.length > 0 && (
               <div>
-                <h4 className="font-medium mb-4 text-lg">Model</h4>
+                <h4 className="font-medium mb-4 text-lg">Size</h4>
                 <div className="grid grid-cols-2 gap-4">
                   {variantsByVersion.map((variant) => (
                     <button
                       key={variant}
-                      className={`p-4 rounded-lg border text-left ${
-                        selectedVariant === variant
+                      className={`p-4 rounded-lg border text-left ${selectedVariant === variant
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:bg-gray-50'
-                      } transition-colors`}
+                        } transition-colors`}
                       onClick={() => handleVariantSelect(variant)}
                     >
                       {variant}
@@ -356,19 +418,39 @@ const FrameSettings = ({
               </div>
             )}
 
+            {/* Color Selection */}
+            {colorsByVariant.length > 0 && (
+              <div>
+                <h4 className="font-medium mb-4 text-lg">Color</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  {colorsByVariant.map((color) => (
+                    <button
+                      key={color}
+                      className={`p-4 rounded-lg border text-left ${selectedColor === color
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:bg-gray-50'
+                        } transition-colors`}
+                      onClick={() => handleColorSelect(color)}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Orientation Selection */}
-            {selectedVariant && orientationsByVariant.length > 1 && (
+            {orientationsByVariant.length > 1 && (
               <div>
                 <h4 className="font-medium mb-4 text-lg">Orientation</h4>
                 <div className="grid grid-cols-2 gap-4">
                   {orientationsByVariant.map((frame) => (
                     <button
                       key={frame.id}
-                      className={`flex items-center justify-center p-4 rounded-lg ${
-                        selectedFrame.id === frame.id
+                      className={`flex items-center justify-center p-4 rounded-lg ${selectedFrame.id === frame.id
                           ? 'bg-blue-500 text-white'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                      } transition-colors`}
+                        } transition-colors`}
                       onClick={() => setSelectedFrame(frame)}
                     >
                       {frame.orientation === 'Portrait' ? (
@@ -383,7 +465,7 @@ const FrameSettings = ({
               </div>
             )}
           </div>
-          
+
           <div className="mt-8 pt-6 border-t border-gray-200 flex gap-4">
             <button
               onClick={onClose}
