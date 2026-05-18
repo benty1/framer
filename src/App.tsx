@@ -10,7 +10,7 @@ function App() {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-gray-100 text-gray-900">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-zinc-100 selection:bg-blue-500/30 selection:text-blue-400">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
         <ScreenshotFramer
