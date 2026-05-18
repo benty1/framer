@@ -235,18 +235,18 @@ const FramePreview = ({ image, frame }: FramePreviewProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative transition-all duration-300 transform hover:scale-[1.01] flex items-center justify-center">
+    <div className="flex flex-col items-center w-full">
+      <div className="relative transition-all duration-300 transform hover:scale-[1.01] flex items-center justify-center p-2 rounded-2xl bg-app-panelSolid/20 border border-app-border/40 max-w-full">
         <canvas
           ref={canvasRef}
-          className="max-w-full w-auto max-h-[80vh] md:max-h-[calc(100vh-128px)] h-auto shadow-xl rounded-3xl"
+          className="max-w-full w-auto max-h-[70vh] md:max-h-[calc(100vh-180px)] h-auto shadow-sleek rounded-2xl"
         />
       </div>
 
       <button
         id="download-button"
         onClick={handleDownload}
-        className="mt-6 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center transition-colors"
+        className="mt-6 py-2 px-6 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg flex items-center transition-colors shadow-lg shadow-blue-500/10"
       >
         <Download className="h-4 w-4 mr-2" />
         Download Framed Image

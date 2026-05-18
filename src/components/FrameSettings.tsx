@@ -128,11 +128,9 @@ const FrameSettings = ({
       frame.version === version
     );
 
-    // If there's exactly one frame or the frames don't have variants, select it directly
     if (matchingFrames.length === 1 || !matchingFrames.some(frame => frame.variant)) {
       setSelectedFrame(matchingFrames[0]);
     } else {
-      // If there are variants, let the variant selection handle it
       const variants = matchingFrames
         .map(frame => frame.variant)
         .filter((variant): variant is string => variant !== undefined);
@@ -146,7 +144,6 @@ const FrameSettings = ({
   const handleVariantSelect = useCallback((variant: string) => {
     setSelectedVariant(variant);
 
-    // If there's only one orientation or no orientation needed, select the frame
     const matchingFrames = frames.filter(frame =>
       frame.category === selectedCategory &&
       frame.model === selectedModel &&
@@ -157,7 +154,6 @@ const FrameSettings = ({
     if (matchingFrames.length === 1) {
       setSelectedFrame(matchingFrames[0]);
     } else if (matchingFrames.length > 1) {
-      // Prefer Portrait orientation if available
       const portraitFrame = matchingFrames.find(frame => frame.orientation === 'Portrait');
       if (portraitFrame) {
         setSelectedFrame(portraitFrame);
@@ -170,7 +166,6 @@ const FrameSettings = ({
   const handleColorSelect = useCallback((color: string) => {
     setSelectedColor(color);
 
-    // Find matching frames for this color
     const matchingFrames = frames.filter(frame =>
       frame.category === selectedCategory &&
       frame.model === selectedModel &&
@@ -181,7 +176,6 @@ const FrameSettings = ({
     if (matchingFrames.length === 1) {
       setSelectedFrame(matchingFrames[0]);
     } else if (matchingFrames.length > 1) {
-      // Prefer Portrait orientation if available
       const portraitFrame = matchingFrames.find(frame => frame.orientation === 'Portrait');
       if (portraitFrame) {
         setSelectedFrame(portraitFrame);
@@ -195,7 +189,6 @@ const FrameSettings = ({
   useEffect(() => {
     if (isLoading || error) return;
 
-    // Auto-select first model if none selected
     if (modelsByCategory.length > 0 && !selectedModel) {
       handleModelSelect(modelsByCategory[0]);
     }
@@ -204,23 +197,19 @@ const FrameSettings = ({
   useEffect(() => {
     if (isLoading || error) return;
 
-    // Auto-select first version if available
     if (versionsByModel.length > 0 && !selectedVersion) {
       const version = versionsByModel[0];
       setSelectedVersion(version);
 
-      // Find matching frames for this version
       const matchingFrames = frames.filter(frame =>
         frame.category === selectedCategory &&
         frame.model === selectedModel &&
         frame.version === version
       );
 
-      // If there's exactly one frame or the frames don't have variants, select it directly
       if (matchingFrames.length === 1 || !matchingFrames.some(frame => frame.variant)) {
         setSelectedFrame(matchingFrames[0]);
       } else {
-        // If there are variants, let the variant selection handle it
         const variants = matchingFrames
           .map(frame => frame.variant)
           .filter((variant): variant is string => variant !== undefined);
@@ -235,7 +224,6 @@ const FrameSettings = ({
   useEffect(() => {
     if (isLoading || error) return;
 
-    // Auto-select first variant if available
     if (variantsByVersion.length > 0 && !selectedVariant) {
       handleVariantSelect(variantsByVersion[0]);
     }
@@ -244,7 +232,6 @@ const FrameSettings = ({
   useEffect(() => {
     if (isLoading || error) return;
 
-    // Auto-select first color if available
     if (colorsByVariant.length > 0 && !selectedColor) {
       handleColorSelect(colorsByVariant[0]);
     }
@@ -253,7 +240,6 @@ const FrameSettings = ({
   useEffect(() => {
     if (isLoading || error) return;
 
-    // Auto-select first orientation if available
     if (orientationsByVariant.length === 1) {
       setSelectedFrame(orientationsByVariant[0]);
     } else if (orientationsByVariant.length > 1) {
@@ -282,7 +268,6 @@ const FrameSettings = ({
     if (isLoading || error) return;
     if (!selectedCategory || !selectedModel || !selectedVersion) return;
 
-    // Find all frames matching the current selection
     const matchingFrames = frames.filter(frame =>
       frame.category === selectedCategory &&
       frame.model === selectedModel &&
@@ -290,7 +275,6 @@ const FrameSettings = ({
       (selectedVariant ? frame.variant === selectedVariant : true)
     );
 
-    // If only one frame matches and it's not already selected, select it
     if (matchingFrames.length === 1 && selectedFrame?.id !== matchingFrames[0].id) {
       setSelectedFrame(matchingFrames[0]);
     }
@@ -298,9 +282,9 @@ const FrameSettings = ({
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-20 animate-fadeIn">
-        <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-8 mx-4 animate-slideUp">
-          <p className="text-center text-gray-500">Loading available frames...</p>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-20 animate-fadeIn">
+        <div className="bg-app-panel border border-app-border rounded-xl shadow-2xl max-w-2xl w-full p-8 mx-4 animate-slideUp text-center">
+          <p className="text-app-textMuted">Loading available frames...</p>
         </div>
       </div>
     );
@@ -308,39 +292,40 @@ const FrameSettings = ({
 
   if (error) {
     return (
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-20 animate-fadeIn">
-        <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-8 mx-4 animate-slideUp">
-          <p className="text-center text-red-500">Error loading frames: {error}</p>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-20 animate-fadeIn">
+        <div className="bg-app-panel border border-app-border rounded-xl shadow-2xl max-w-2xl w-full p-8 mx-4 animate-slideUp text-center">
+          <p className="text-red-400">Error loading frames: {error}</p>
         </div>
       </div>
     );
   }
+  
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-20 animate-fadeIn overflow-y-auto">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-20 animate-fadeIn overflow-y-auto">
       <div className="min-h-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-8 animate-slideUp my-8">
+        <div className="bg-app-panelSolid border border-app-border rounded-xl shadow-2xl max-w-2xl w-full p-8 animate-slideUp my-8">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-medium">Frame Settings</h3>
+            <h3 className="text-xl font-medium text-app-textMain">Frame Settings</h3>
             <button
               onClick={onClose}
-              className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-1.5 hover:bg-app-panelSolid/80 rounded-full transition-colors border border-transparent hover:border-app-border text-app-textMuted hover:text-app-textMain"
             >
-              <X className="h-6 w-6 text-gray-500" />
+              <X className="h-6 w-6" />
             </button>
           </div>
 
           <div className="space-y-8">
             {/* Device Category Selection */}
             <div>
-              <h4 className="font-medium mb-4 text-lg">Device Type</h4>
+              <h4 className="font-medium mb-4 text-lg text-app-textMain">Device Type</h4>
               <div className="grid grid-cols-4 gap-4">
                 {categories.map((category) => (
                   <button
                     key={category}
-                    className={`p-4 rounded-lg border ${selectedCategory === category
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:bg-gray-50'
-                      } transition-colors text-base`}
+                    className={`p-4 rounded-lg border font-medium text-base transition-all duration-200 ${selectedCategory === category
+                        ? 'border-blue-500 bg-blue-500/10 text-blue-400 shadow-lg shadow-blue-500/5'
+                        : 'border-app-border bg-app-panelSolid hover:bg-app-panelSolid/80 text-app-textMuted hover:text-app-textMain'
+                      }`}
                     onClick={() => {
                       setSelectedCategory(category);
                       setSelectedModel(null);
@@ -358,15 +343,15 @@ const FrameSettings = ({
             {/* Device Model Selection */}
             {modelsByCategory.length > 0 && (
               <div>
-                <h4 className="font-medium mb-4 text-lg">Device Model</h4>
-                <div className="grid grid-cols-2 gap-4 max-h-56 overflow-y-auto pr-2">
+                <h4 className="font-medium mb-4 text-lg text-app-textMain">Device Model</h4>
+                <div className="grid grid-cols-2 gap-4 max-h-56 overflow-y-auto pr-2 scrollbar-thin">
                   {modelsByCategory.map((model) => (
                     <button
                       key={model}
-                      className={`p-4 rounded-lg border text-left ${selectedModel === model
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50'
-                        } transition-colors`}
+                      className={`p-4 rounded-lg border text-left font-medium transition-all duration-200 ${selectedModel === model
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                          : 'border-app-border bg-app-panelSolid hover:bg-app-panelSolid/80 text-app-textMuted hover:text-app-textMain'
+                        }`}
                       onClick={() => handleModelSelect(model)}
                     >
                       {model}
@@ -379,15 +364,15 @@ const FrameSettings = ({
             {/* Version Selection */}
             {selectedModel && versionsByModel.length > 0 && (
               <div>
-                <h4 className="font-medium mb-4 text-lg">Version</h4>
+                <h4 className="font-medium mb-4 text-lg text-app-textMain">Version</h4>
                 <div className="grid grid-cols-2 gap-4">
                   {versionsByModel.map((version) => (
                     <button
                       key={version}
-                      className={`p-4 rounded-lg border text-left ${selectedVersion === version
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50'
-                        } transition-colors`}
+                      className={`p-4 rounded-lg border text-left font-medium transition-all duration-200 ${selectedVersion === version
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                          : 'border-app-border bg-app-panelSolid hover:bg-app-panelSolid/80 text-app-textMuted hover:text-app-textMain'
+                        }`}
                       onClick={() => handleVersionSelect(version)}
                     >
                       {version}
@@ -400,15 +385,15 @@ const FrameSettings = ({
             {/* Variant Selection */}
             {variantsByVersion.length > 0 && (
               <div>
-                <h4 className="font-medium mb-4 text-lg">Size</h4>
+                <h4 className="font-medium mb-4 text-lg text-app-textMain">Size</h4>
                 <div className="grid grid-cols-2 gap-4">
                   {variantsByVersion.map((variant) => (
                     <button
                       key={variant}
-                      className={`p-4 rounded-lg border text-left ${selectedVariant === variant
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50'
-                        } transition-colors`}
+                      className={`p-4 rounded-lg border text-left font-medium transition-all duration-200 ${selectedVariant === variant
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                          : 'border-app-border bg-app-panelSolid hover:bg-app-panelSolid/80 text-app-textMuted hover:text-app-textMain'
+                        }`}
                       onClick={() => handleVariantSelect(variant)}
                     >
                       {variant}
@@ -421,15 +406,15 @@ const FrameSettings = ({
             {/* Color Selection */}
             {colorsByVariant.length > 0 && (
               <div>
-                <h4 className="font-medium mb-4 text-lg">Color</h4>
+                <h4 className="font-medium mb-4 text-lg text-app-textMain">Color</h4>
                 <div className="grid grid-cols-3 gap-4">
                   {colorsByVariant.map((color) => (
                     <button
                       key={color}
-                      className={`p-4 rounded-lg border text-left ${selectedColor === color
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50'
-                        } transition-colors`}
+                      className={`p-4 rounded-lg border text-left font-medium transition-all duration-200 ${selectedColor === color
+                          ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                          : 'border-app-border bg-app-panelSolid hover:bg-app-panelSolid/80 text-app-textMuted hover:text-app-textMain'
+                        }`}
                       onClick={() => handleColorSelect(color)}
                     >
                       {color}
@@ -442,15 +427,15 @@ const FrameSettings = ({
             {/* Orientation Selection */}
             {orientationsByVariant.length > 1 && (
               <div>
-                <h4 className="font-medium mb-4 text-lg">Orientation</h4>
+                <h4 className="font-medium mb-4 text-lg text-app-textMain">Orientation</h4>
                 <div className="grid grid-cols-2 gap-4">
                   {orientationsByVariant.map((frame) => (
                     <button
                       key={frame.id}
-                      className={`flex items-center justify-center p-4 rounded-lg ${selectedFrame.id === frame.id
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                        } transition-colors`}
+                      className={`flex items-center justify-center p-4 rounded-lg font-medium transition-all duration-200 ${selectedFrame.id === frame.id
+                          ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
+                          : 'bg-app-panelSolid hover:bg-app-panelSolid/80 border border-app-border text-app-textMuted hover:text-app-textMain'
+                        }`}
                       onClick={() => setSelectedFrame(frame)}
                     >
                       {frame.orientation === 'Portrait' ? (
@@ -466,10 +451,10 @@ const FrameSettings = ({
             )}
           </div>
 
-          <div className="mt-8 pt-6 border-t border-gray-200 flex gap-4">
+          <div className="mt-8 pt-6 border-t border-app-border flex gap-4">
             <button
               onClick={onClose}
-              className="w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-base font-medium"
+              className="w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 text-base font-medium shadow-lg shadow-blue-500/10"
             >
               Apply Settings
             </button>
