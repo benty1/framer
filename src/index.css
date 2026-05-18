@@ -2,32 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 1. Default Mode (Light) */
 :root {
-  --color-canvas-from: #f8fafc;
-  --color-canvas-via: #f1f5f9;
-  --color-canvas-to: #e2e8f0;
+  /* ==========================================================================
+     LIGHT MODE THEME (Default Ecosystem)
+     ========================================================================== */
+  /* Surface Canvas Gradient Roles */
+  --color-canvas-from: #f8fafc;        /* Slate 50 */
+  --color-canvas-via: #f1f5f9;         /* Slate 100 */
+  --color-canvas-to: #e2e8f0;          /* Slate 200 */
   
-  --color-panel: rgba(255, 255, 255, 0.75);
-  --color-panel-solid: #ffffff;
-  --color-border: rgba(148, 163, 184, 0.2);
+  /* Component Card & Container Layouts */
+  --color-panel: rgba(255, 255, 255, 0.75);  /* Clean white translucent glass */
+  --color-panel-solid: #ffffff;             /* Crisp solid structural panel */
+  --color-border: rgba(226, 232, 240, 0.8); /* Soft slate divider line */
   
-  --color-text-main: #0f172a;
-  --color-text-muted: #475569;
+  /* Semantic Typography Scaling */
+  --color-text-main: #0f172a;          /* Slate 900 for absolute contrast */
+  --color-text-muted: #64748b;         /* Slate 500 for secondary elements */
 }
 
-/* 2. Auto-Detect System Preference (Dark Mode) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-canvas-from: #090d16;
-    --color-canvas-via: #111827;
-    --color-canvas-to: #090d16;
+    /* ==========================================================================
+       DARK MODE THEME (Automated System Switch)
+       ========================================================================== */
+    /* Surface Canvas Gradient Roles */
+    --color-canvas-from: #090d16;       /* Deep Midnight */
+    --color-canvas-via: #111827;        /* Core Slate 900 */
+    --color-canvas-to: #090d16;        /* Deep Midnight */
     
-    --color-panel: rgba(31, 41, 55, 0.4);
-    --color-panel-solid: #111827;
-    --color-border: rgba(55, 65, 81, 0.5);
+    /* Component Card & Container Layouts */
+    --color-panel: rgba(31, 41, 55, 0.4);      /* Translucent dark glass */
+    --color-panel-solid: #111827;              /* Solid dark inner panel */
+    --color-border: rgba(55, 65, 81, 0.5);     /* Deep structural divider */
     
-    --color-text-main: #f3f4f6;
-    --color-text-muted: #9ca3af;
+    /* Semantic Typography Scaling */
+    --color-text-main: #f3f4f6;                /* Gray 100 for title readability */
+    --color-text-muted: #9ca3af;               /* Gray 400 for structural text */
+  }
+}
+
+/* Optional helper utility to keep canvas graphics crisp inside the application layout */
+@layer utilities {
+  .shadow-sleek {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
   }
 }
