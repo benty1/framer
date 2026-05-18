@@ -2,41 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 1. Default Mode (Light) */
 :root {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --color-canvas-from: #f8fafc;
+  --color-canvas-via: #f1f5f9;
+  --color-canvas-to: #e2e8f0;
+  
+  --color-panel: rgba(255, 255, 255, 0.75);
+  --color-panel-solid: #ffffff;
+  --color-border: rgba(148, 163, 184, 0.2);
+  
+  --color-text-main: #0f172a;
+  --color-text-muted: #475569;
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { 
-    opacity: 0;
-    transform: translateY(10px);
+/* 2. Auto-Detect System Preference (Dark Mode) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas-from: #090d16;
+    --color-canvas-via: #111827;
+    --color-canvas-to: #090d16;
+    
+    --color-panel: rgba(31, 41, 55, 0.4);
+    --color-panel-solid: #111827;
+    --color-border: rgba(55, 65, 81, 0.5);
+    
+    --color-text-main: #f3f4f6;
+    --color-text-muted: #9ca3af;
   }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.2s ease-out;
-}
-
-.animate-slideUp {
-  animation: slideUp 0.3s ease-out;
 }
