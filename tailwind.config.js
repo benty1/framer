@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Centralized Semantic Tokens linked to CSS Variables
+        // Exposing your centralized tokens to the Tailwind compiler
         app: {
           canvasFrom: 'var(--color-canvas-from)',
           canvasVia: 'var(--color-canvas-via)',
@@ -19,9 +19,6 @@ export default {
           textMuted: 'var(--color-text-muted)',
         },
       },
-      boxShadow: {
-        'sleek': '0 4px 30px rgba(0, 0, 0, 0.3)',
-      }
     },
   },
   plugins: [],
