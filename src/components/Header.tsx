@@ -8,7 +8,7 @@ const Header = () => {
           <h1 className="text-xl font-medium text-app-textMain">
             <a href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">          
               <Smartphone className="h-6 w-6 text-blue-400" />
-              AppleFramer
+              Framer
             </a>  
           </h1>
         </div>

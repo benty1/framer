@@ -284,7 +284,7 @@ const ScreenshotFramer = ({
             screenshots in beautiful, realistic Apple device mockups.
           </p>
           <p className="text-sm text-app-textMuted max-w-xl mx-auto">
-            Just upload your screenshots—AppleFramer auto-detects the device,
+            Just upload your screenshots—Framer auto-detects the device,
             supports batch processing, and lets you download your framed images
             individually or as a zip. Perfect for App Store, marketing, or
             portfolio use.

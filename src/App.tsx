@@ -10,7 +10,7 @@ function App() {
 
   // Clean title management for search engines / production look
   useEffect(() => {
-    document.title = 'AppleFramer • Professional Device Mockups';
+    document.title = 'Framer • Professional Device Mockups';
   }, []);
 
   return (
