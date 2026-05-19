@@ -1,4 +1,3 @@
-cat << 'EOF' > src/components/Footer.tsx
 import React from 'react';
 
 const Footer = () => {
